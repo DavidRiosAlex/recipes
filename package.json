@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts --exec ts-node"
+    "dev": "SQL_DATABASE_TYPE='mysql' SQL_DATABASE_HOST='remotemysql.com' SQL_DATABASE_PORT=3306 SQL_DATABASE_USER='WCnyUFmwmq' SQL_DATABASE_PASSWORD='IhkfA1k2xk' SQL_DATABASE_NAME='WCnyUFmwmq' nodemon src/index.ts --exec ts-node"
   },
   "repository": {
     "type": "git",

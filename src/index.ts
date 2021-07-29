@@ -4,7 +4,7 @@ import connect from './config/typeorm';
 
 async function main(){
     connect();
-    const port = 3000;
+    const port = 3010;
     const app = await server();
     app.listen(port);
     console.log(`server is listening at port ${port}`);
