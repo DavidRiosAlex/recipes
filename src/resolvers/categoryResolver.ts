@@ -7,7 +7,7 @@ import {
     InputType,
     Int
 } from 'type-graphql';
-import Product from '../entity/Products';
+import Product from '../entity/Recipe';
 
 @InputType()
 class ProductInput {

@@ -1,14 +1,13 @@
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
-import { PingResolver } from './resolvers/ping';
-import { ProductResolver } from './resolvers/productResolver';
+import { ProductResolver } from './resolvers/userResolver';
 import { buildSchema } from 'type-graphql';
 
 const server = async () => {
     const app = express();
     const server = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [PingResolver, ProductResolver],
+            resolvers: [ProductResolver],
             validate: false,
         }),
         context: ({req, res}) => ({ req, res })

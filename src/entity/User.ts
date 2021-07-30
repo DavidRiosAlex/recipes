@@ -14,11 +14,11 @@ class Product extends BaseEntity{
 
     @Field( ()=> Int)
     @Column('int', { default: 0 })
-    quantity!: number;
+    email!: number;
 
     @Field( ()=> String)
     @CreateDateColumn({type: 'timestamp'})
-    createdAt!: string;
+    password!: string;
 }
 
 export default Product;
