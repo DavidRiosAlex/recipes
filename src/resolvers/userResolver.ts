@@ -7,48 +7,85 @@ import {
     InputType,
     Int
 } from 'type-graphql';
-import Product from '../entity/Recipe';
+import jwt from 'jsonwebtoken';
+import { createHmac, randomBytes } from 'crypto';
+import { User } from '../entity';
+import { SECRET_USER_JWT } from '../config/config';
 
 @InputType()
-class ProductInput {
+class UserInput {
     @Field()
     name!: string
     @Field()
-    quantity!: number
+    password!: string
+    @Field()
+    email!: string
 }
 
 @Resolver()
-export class ProductResolver{
-    @Mutation(() => Product)
-    async createProduct(
-        @Arg('variables', () => ProductInput) variables: ProductInput
+export class UserResolver{
+
+
+    @Mutation(() => User)
+
+    async signUp(
+        @Arg('data', () => UserInput) data: UserInput
     ){
-        const newProduct = Product.create(variables);
-        await newProduct.save()
-        console.log(' Product --> created', newProduct);
-        return newProduct
-    }
-    @Mutation(() => Boolean)
-    async deleteProduct(
-        @Arg('id', () => Int) id: number
-    ){
-        console.log('product id --> ' + id + ' deleted');
-        await Product.delete(id);
-        return true 
+        const userAlreadyExist = await User.findOne({
+            email: data.email
+        });
+
+        if (userAlreadyExist) return new Error('user already exist');
+
+        const { password } = data;
+        const secret = randomBytes(16).toString('hex');
+
+        data.password = createHmac('sha256', secret).update(password).digest('hex');
+        const userData = {
+            ...data,
+            secret,
+        };
+        const newUser = await User.create(userData);
+        await newUser.save();
+        console.log('>> new user --> ' + JSON.stringify(newUser, null, 2));
+        return newUser
     }
 
-    @Query(()=>[Product])
-    products(){
-        return Product.find()
+    @Query(()=>[User])
+    users(){
+        return User.find()
     }
 
     @Mutation(() => Boolean)
-    async updateProduct(
+    async updateUser(
         @Arg('id', () => Int ) id: number,
-        @Arg('product', () => ProductInput) product: ProductInput
+        @Arg('user', () => UserInput) user: UserInput
     ){
-        await Product.update(id, product);
+        await User.update(id, user);
         console.log('product with id --> ' + id + ' updated');
         return true
+    }
+
+    @Mutation(() => String)
+    async login(
+        @Arg('email', () => String) email: string,
+        @Arg('password', () => String) password: string,
+    ){
+        const user = await User.findOne({ email });
+        if (!user) return new Error('user not found')
+        console.log('>> user found --> ');
+        const hashedPassword = createHmac('sha256', user.secret ).update(password).digest('hex');
+
+        console.log('>> hashedPassword --> ',hashedPassword);
+        if (hashedPassword !== user.password) return new Error('authentication failed');
+
+        const oneDayInMs = 3600 * 24;
+
+        const jsonwebtoken = jwt.sign({
+            data: user,
+        }, SECRET_USER_JWT, { expiresIn: oneDayInMs });
+        console.log('>> jsonwebtoken --> ', jsonwebtoken);
+
+        return jsonwebtoken
     }
 }

@@ -18,7 +18,7 @@ class ProductInput {
 }
 
 @Resolver()
-export class ProductResolver{
+export class RecipeResolver{
     @Mutation(() => Product)
     async createProduct(
         @Arg('variables', () => ProductInput) variables: ProductInput

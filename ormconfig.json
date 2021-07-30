@@ -1,0 +1,14 @@
+{
+    "type": "mysql",
+    "host": "remotemysql.com",
+    "port": 3306,
+    "username": "WCnyUFmwmq",
+    "password": "IhkfA1k2xk",
+    "database": "WCnyUFmwmq",
+    "entities": ["dist/**/*.entity.js"],
+    "migrationsTableName": "custom_migration_table",
+    "migrations": ["migration/*.js"],
+    "cli": {
+        "migrationsDir": "migration"
+    }
+}

@@ -1,9 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, BaseEntity} from 'typeorm';
-import { Field, Int, ObjectType } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 
 @ObjectType()
 @Entity()
-class Product extends BaseEntity{
+class User extends BaseEntity{
     @Field()
     @PrimaryGeneratedColumn()
     id!: number;
@@ -12,13 +12,17 @@ class Product extends BaseEntity{
     @Column()
     name!: string;
 
-    @Field( ()=> Int)
-    @Column('int', { default: 0 })
-    email!: number;
+    @Field( ()=> String)
+    @Column()
+    email!: string;
 
     @Field( ()=> String)
-    @CreateDateColumn({type: 'timestamp'})
+    @Column(    )
     password!: string;
+
+    @Field( ()=> String)
+    @Column()
+    secret!: string;
 }
 
-export default Product;
+export default User;

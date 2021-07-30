@@ -1,13 +1,13 @@
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
-import { ProductResolver } from './resolvers/userResolver';
+import { UserResolver, CategoryResolver, RecipeResolver, IngredientResolver } from './resolvers';
 import { buildSchema } from 'type-graphql';
 
 const server = async () => {
     const app = express();
     const server = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [ProductResolver],
+            resolvers: [ UserResolver, IngredientResolver, RecipeResolver, CategoryResolver ],
             validate: false,
         }),
         context: ({req, res}) => ({ req, res })
