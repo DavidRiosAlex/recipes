@@ -15,14 +15,13 @@ class Recipe extends BaseEntity{
     name!: string;
 
     @Field( ()=> Int)
-    @Column('int', { default: 0 })
-    description!: number;
+    description!: string;
 
     @Field( ()=> [Ingredient])
-    @ManyToMany(type => Ingredient, {
+    @ManyToMany(type => Ingredient, ingredient => ingredient.recipe, {
         eager: true,
     })
-    @JoinColumn({ name: 'category_id' })
+    @JoinColumn()
     ingredients!: Ingredient[];
 
     @Field( ()=> Category)

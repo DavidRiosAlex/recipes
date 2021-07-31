@@ -21,9 +21,9 @@ class RecipeInput {
     @Field()
     description!: string;
     @Field()
-    ingredients!: string;
+    ingredients!: number;
     @Field()
-    category!: string;
+    category!: number;
 }
 
 @Resolver()
