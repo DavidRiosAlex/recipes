@@ -5,50 +5,64 @@ import {
     Arg,
     Field,
     InputType,
-    Int
 } from 'type-graphql';
-import Product from '../entity/Recipe';
+import Category from '../entity/Category';
 
 @InputType()
-class ProductInput {
+class CategoryInput {
     @Field()
     name!: string
-    @Field()
-    quantity!: number
 }
 
 @Resolver()
 export class CategoryResolver{
-    @Mutation(() => Product)
-    async createProduct(
-        @Arg('variables', () => ProductInput) variables: ProductInput
+    @Mutation(() => Category)
+    async createCategory(
+        @Arg('token', () => String) token: string,
+        @Arg('data', () => CategoryInput) data: CategoryInput
     ){
-        const newProduct = Product.create(variables);
-        await newProduct.save()
-        console.log(' Product --> created', newProduct);
-        return newProduct
-    }
-    @Mutation(() => Boolean)
-    async deleteProduct(
-        @Arg('id', () => Int) id: number
-    ){
-        console.log('product id --> ' + id + ' deleted');
-        await Product.delete(id);
-        return true 
+        const newCategory = Category.create(data);
+        await newCategory.save()
+        return newCategory
     }
 
-    @Query(()=>[Product])
-    products(){
-        return Product.find()
+    @Query(()=> [Category])
+    getCategories(
+        @Arg('token', () => String) token: string,
+    ){
+
+        return Category.find()
+    }
+
+    @Query(()=> Category)
+    getOneCategories(
+        @Arg('token', () => String) token: string,
+        @Arg('name', () => String) name: string
+    ){
+        return Category.findOne({ name })
     }
 
     @Mutation(() => Boolean)
-    async updateProduct(
-        @Arg('id', () => Int ) id: number,
-        @Arg('product', () => ProductInput) product: ProductInput
+    async updateCategory(
+        @Arg('token', () => String) token: string,
+        @Arg('name', () => String) name: string,
+        @Arg('data', () => CategoryInput) data: Category
     ){
-        await Product.update(id, product);
-        console.log('product with id --> ' + id + ' updated');
+        const category = await Category.findOne({ name });
+        if (!category) return new Error('category not found');
+        category.name = data.name;
+        await category.save();
+        return category
+    }
+
+    @Mutation(() => Boolean)
+    async deleteCategory(
+        @Arg('token', () => String ) token: string,
+        @Arg('name', () => String ) name: string
+    ){
+        const category = await Category.findOne({ name });
+        if (!category) return new Error('category not found');
+        await Category.delete({ name });
         return true
     }
 }

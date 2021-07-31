@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, BaseEntity} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, BaseEntity, ManyToMany, JoinTable} from 'typeorm';
 import { Field, ObjectType } from 'type-graphql';
+import Recipe from './Recipe';
 
 @ObjectType()
 @Entity()
@@ -9,8 +10,12 @@ class Ingredient extends BaseEntity{
     id!: number;
 
     @Field( ()=> String)
-    @Column()
+    @Column({ unique: true })
     name!: string;
+
+    @ManyToMany(() => Recipe)
+    @JoinTable()
+    recipe: Recipe[];
 }
 
 export default Ingredient;

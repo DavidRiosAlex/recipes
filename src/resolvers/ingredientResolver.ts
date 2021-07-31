@@ -7,10 +7,11 @@ import {
     InputType,
     Int
 } from 'type-graphql';
-import Product from '../entity/Recipe';
+import Ingredient from '../entity/Ingredients';
+import auth from '../helpers/auth';
 
 @InputType()
-class ProductInput {
+class IngredientInput {
     @Field()
     name!: string
     @Field()
@@ -19,36 +20,51 @@ class ProductInput {
 
 @Resolver()
 export class IngredientResolver{
-    @Mutation(() => Product)
-    async createProduct(
-        @Arg('variables', () => ProductInput) variables: ProductInput
+    @Mutation(() => Ingredient)
+    async createIngredient(
+        @Arg('token', () => String) token: string,
+        @Arg('data', () => IngredientInput) data: IngredientInput
     ){
-        const newProduct = Product.create(variables);
+        auth(token);
+        const newProduct = Ingredient.create(data);
         await newProduct.save()
-        console.log(' Product --> created', newProduct);
         return newProduct
     }
     @Mutation(() => Boolean)
-    async deleteProduct(
-        @Arg('id', () => Int) id: number
+    async deleteIngredient(
+        @Arg('token', () => String) token: string,
+        @Arg('name', () => Int) name: string
     ){
-        console.log('product id --> ' + id + ' deleted');
-        await Product.delete(id);
+        auth(token);
+        await Ingredient.delete({ name });
         return true 
     }
 
-    @Query(()=>[Product])
-    products(){
-        return Product.find()
+    @Query(()=>[Ingredient])
+    getIngredient(
+        @Arg('token', () => String) token
+    ){
+        auth(token);
+        return Ingredient.find()
+    }
+
+    @Query(()=>[Ingredient])
+    getOneIngredient(
+        @Arg('token', () => String) token: string,
+        @Arg('name', () => String, { nullable: true }) name: string
+    ){
+        auth(token);
+        return Ingredient.findOne({ name });
     }
 
     @Mutation(() => Boolean)
-    async updateProduct(
+    async updateIngredient(
         @Arg('id', () => Int ) id: number,
-        @Arg('product', () => ProductInput) product: ProductInput
+        @Arg('ingredient', () => IngredientInput) ingredient: IngredientInput,
+        @Arg('token', () => String) token: string
     ){
-        await Product.update(id, product);
-        console.log('product with id --> ' + id + ' updated');
+        auth(token);
+        await Ingredient.update(id, ingredient);
         return true
     }
 }

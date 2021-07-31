@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToOne, JoinColumn, ManyToMany} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToOne, JoinColumn, ManyToMany, ManyToOne} from 'typeorm';
 import { Field, Int, ObjectType } from 'type-graphql';
 import Category from './Category';
 import Ingredient from './Ingredients';
@@ -18,7 +18,7 @@ class Recipe extends BaseEntity{
     @Column('int', { default: 0 })
     description!: number;
 
-    @Field( ()=> Ingredient)
+    @Field( ()=> [Ingredient])
     @ManyToMany(type => Ingredient, {
         eager: true,
     })
@@ -29,7 +29,9 @@ class Recipe extends BaseEntity{
     @OneToOne(type => Category, {
         eager: true,
     })
-    @JoinColumn({ name: 'category_id' })
+
+    @Field(() => Category)
+    @ManyToOne(type => Category, category => category.recipe)
     category!: Category;
 }
 
