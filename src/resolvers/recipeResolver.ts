@@ -5,50 +5,75 @@ import {
     Arg,
     Field,
     InputType,
-    Int
+    Int,
+    ObjectType
 } from 'type-graphql';
-import Product from '../entity/Recipe';
+import Recipe from '../entity/Recipe';
+import Ingredient from '../entity/Ingredients';
+import Category from '../entity/Category';
+import auth from '../helpers/auth';
 
+@ObjectType()
 @InputType()
-class ProductInput {
+class RecipeInput {
     @Field()
-    name!: string
+    name!: string;
     @Field()
-    quantity!: number
+    description!: string;
+    @Field()
+    ingredients!: string;
+    @Field()
+    category!: string;
 }
 
 @Resolver()
 export class RecipeResolver{
-    @Mutation(() => Product)
-    async createProduct(
-        @Arg('variables', () => ProductInput) variables: ProductInput
+    @Mutation(() => Recipe)
+    async createRecipe(
+        @Arg('data', () => RecipeInput) data: Recipe,
+        @Arg('token', () => String) token: string
     ){
-        const newProduct = Product.create(variables);
+        auth(token);
+        const newProduct = Recipe.create(data);
         await newProduct.save()
-        console.log(' Product --> created', newProduct);
         return newProduct
     }
     @Mutation(() => Boolean)
-    async deleteProduct(
-        @Arg('id', () => Int) id: number
+    async deleteRecipe(
+        @Arg('id', () => Int) id: number,
+        @Arg('token', () => String) token: string
     ){
-        console.log('product id --> ' + id + ' deleted');
-        await Product.delete(id);
+        auth(token);
+        await Recipe.delete(id);
         return true 
     }
 
-    @Query(()=>[Product])
-    products(){
-        return Product.find()
+    @Query(()=>[Recipe])
+    getRecipes(
+        @Arg('token', () => String) token: string
+    ){
+        auth(token);
+        return Recipe.find()
+    }
+
+    @Query(()=>Recipe)
+    getOneRecipes(
+        @Arg('name', () => String ) name: string,
+        @Arg('token', () => String) token: string
+    ){
+        auth(token);
+        return Recipe.findOne({ })
     }
 
     @Mutation(() => Boolean)
-    async updateProduct(
+    async updateRecipe(
         @Arg('id', () => Int ) id: number,
-        @Arg('product', () => ProductInput) product: ProductInput
+        @Arg('recipe', () => RecipeInput) recipe: Recipe,
+        @Arg('token', () => String) token: string
     ){
-        await Product.update(id, product);
-        console.log('product with id --> ' + id + ' updated');
+
+        auth(token);
+        await Recipe.update(id, recipe);
         return true
     }
 }

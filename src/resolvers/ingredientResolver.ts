@@ -48,7 +48,7 @@ export class IngredientResolver{
         return Ingredient.find()
     }
 
-    @Query(()=>[Ingredient])
+    @Query(()=>Ingredient)
     getOneIngredient(
         @Arg('token', () => String) token: string,
         @Arg('name', () => String, { nullable: true }) name: string
