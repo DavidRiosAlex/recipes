@@ -3,7 +3,7 @@ import server from './app';
 import connect from './config/typeorm';
 
 async function main(){
-    await connect();
+    connect();
     const port = 3010;
     const app = await server();
     app.listen(port);
